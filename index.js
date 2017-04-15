@@ -5,6 +5,7 @@ var mongoose = require ('mongoose');
 var hello = require('./routes/hello');
 var client = require('./client/client');
 var Emails = require('./models/emails.js');
+var emails = require('./routes/email.js');
 mongoose.connect('mongodb://localhost/enron');
 
 
@@ -18,20 +19,9 @@ db.once('open', function(){
 	console.log('Mongoose connection established.');
 })
 
-function getEmails(req, res, next){
-	Emails.find().limit(10).exec(function(err, data)
-	{
-		if(err){res.send('Error');}
-		else{
-			res.json(data);
-		}
-	});
-	return next();
-}
-
 server.get('/', client.get);
 
-server.get('/emails', getEmails);
+server.get('/emails', emails.get);
 
 server.get('/hello/:test', hello.send);
 

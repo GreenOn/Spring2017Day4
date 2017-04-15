@@ -2,30 +2,13 @@ var restify = require('restify');
 var server = restify.createServer();
 var port = 8080;
 var mongoose = require ('mongoose');
+var hello = require('./routes/hello');
+var client = require('./client/client');
+var Emails = require('./models/emails.js');
 mongoose.connect('mongodb://localhost/enron');
+
+
 var db = mongoose.connection;
-var fs = require('fs');
-
-var Schema = mongoose.Schema;
-
-var schema = new Schema({
-	_id: Schema.Types.ObjectId,
-	sender: String,
-	recipients: [],
-	cc:[],
-	text: String,
-	mid: String,
-	fpath: String,
-	bcc: [],
-	to: [],
-	replyto: Schema.Types.Mixed,
-	ctype: String,
-	fname: String,
-	date: Date,
-	subject: String
-})
-
-var Emails = mongoose.model('emails',schema);
 
 db.on('error', function(msg){
 	console.log('Mongoose connection error %s', msg);
@@ -34,12 +17,6 @@ db.on('error', function(msg){
 db.once('open', function(){
 	console.log('Mongoose connection established.');
 })
-
-
-function send(req, res, next){
-	res.send("Testing "+ req.params.test);
-	return next();
-}
 
 function getEmails(req, res, next){
 	Emails.find().limit(10).exec(function(err, data)
@@ -51,41 +28,18 @@ function getEmails(req, res, next){
 	});
 	return next();
 }
-server.get('/',function(req,res,ext){
-	fs.readFile('index.html',function(err,data){
-		if(err){
-			console.log("Cannot read file index.html");
-			res.send(404);
-		}
-		else
-		{
-			var body = data.toString();
-			res.writeHead(200, {
-				'Content-Length': Buffer.byteLength(body),
-				'Content-Type': 'text/html'
-			});
-			res.write(body);
-			res.end();
-		}
-		return next();
-	})
-});
 
-server.get('/emails',getEmails);
+server.get('/', client.get);
 
-server.get('/hello/:test', send);
+server.get('/emails', getEmails);
 
-server.put('/hello/:test', send);
+server.get('/hello/:test', hello.send);
 
-server.post('hello/:stuff', function(req, res, next){
-	res.send(201, req.params.name + Math.random().tostring(35));
-	return next();
-});
+server.put('/hello/:test', hello.send);
 
-server.del('/hello/:test', function(req, res, next){
-	req.send(req.params.test + " is now gone.. deleted");
-	return next();
-});
+server.post('hello/:stuff', hello.post);
+
+server.del('/hello/:test', hello.del);
 
 server.listen(port,function(){
 	console.log('%s listening at %s', server.name,port);

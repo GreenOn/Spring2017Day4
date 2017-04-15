@@ -1,0 +1,19 @@
+{
+  "name": "spring2017day4",
+  "version": "1.0.0",
+  "description": "day 4",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreenOn/Spring2017Day4.git"
+  },
+  "author": "Pramod",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GreenOn/Spring2017Day4/issues"
+  },
+  "homepage": "https://github.com/GreenOn/Spring2017Day4#readme"
+}
